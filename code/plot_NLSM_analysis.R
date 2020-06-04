@@ -1,12 +1,10 @@
 library("tidyverse")
 library("ggplot2")
 
-load("../data/NLSM_analysis.RData")
-
-res <- res %>% filter(algo == "nest")
+load("../data/analysis_NLSM_results.RData")
 
 res <- res %>%
-    group_by(algo, alpha) %>%
+    group_by(alpha) %>%
     summarize(pos_lo = quantile(pos, 0.05),
               pos_up = quantile(pos, 0.95),
               pos = median(pos),
@@ -29,7 +27,7 @@ res %>%
     theme(panel.grid = element_blank(),
           text = element_text(size = 15),
           plot.title = element_text(hjust = 0.5))
-ggsave("../figs/NLSM_analysis_len_paper.pdf", last_plot(),
+ggsave("../figs/analysis_NLSM_len_paper.pdf", last_plot(),
        width = 4, height = 3.5)
 
 res %>%
@@ -44,7 +42,7 @@ res %>%
     theme(panel.grid = element_blank(),
           text = element_text(size = 15),
           plot.title = element_text(hjust = 0.5))
-ggsave("../figs/NLSM_analysis_pos_paper.pdf", last_plot(),
+ggsave("../figs/analysis_NLSM_pos_paper.pdf", last_plot(),
        width = 4, height = 3.5)
 
 
@@ -60,6 +58,6 @@ res %>%
     theme(panel.grid = element_blank(),
           text = element_text(size = 15),
           plot.title = element_text(hjust = 0.5))
-ggsave("../figs/NLSM_analysis_neg_paper.pdf", last_plot(),
+ggsave("../figs/analysis_NLSM_neg_paper.pdf", last_plot(),
        width = 4, height = 3.5)
 

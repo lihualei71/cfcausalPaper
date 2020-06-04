@@ -1,6 +1,6 @@
 library("tidyverse")
 
-data <- read.csv("../data/synthetic_data.csv")
+data <- read.csv("../data/NLSM_data.csv")
 X <- data %>% select(-Z, -Y) %>% as.matrix
 Y <- data$Y
 T <- data$Z

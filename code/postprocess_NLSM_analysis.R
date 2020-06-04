@@ -1,10 +1,11 @@
 library("tidyverse")
 
-params <- read.table("NLSM_analysis_params.txt")
+params <- read.table("../jobs/analysis_NLSM_params.txt")
 
 df <- list()
 for (i in 1:nrow(params)){
-    filename <- paste0("../raw_data_cluster/NLSM_analysis_seed", params[i, 1],
+    filename <- paste0("../raw_data_cluster/analysis_NLSM",
+                       "_seed", params[i, 1],
                        ".RData")
     tmp <- try(load(filename))
     if (class(tmp) == "try-error"){
@@ -14,4 +15,4 @@ for (i in 1:nrow(params)){
 }
 res <- do.call(rbind, df)
 
-save(res, file = "../data/NLSM_analysis.RData")
+save(res, file = "../data/analysis_NLSM_results.RData")

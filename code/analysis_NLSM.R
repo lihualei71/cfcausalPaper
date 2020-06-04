@@ -1,7 +1,7 @@
 library("tidyverse")
 library("cfcausal")
 source("utils_real_expr.R")
-data <- read.csv("../data/synthetic_data.csv")
+data <- read.csv("../data/NLSM_data.csv")
 
 #### Get parameters
 if (!interactive()){
@@ -18,7 +18,9 @@ if (!interactive()){
     seed <- 199
 }
 
-set.seed(seed * 2020)
+set.seed(seed)
+filename <- paste0("../data/analysis_NLSM_seed", seed, ".RData")
+
 X <- data %>% select(-Z, -Y) %>% as.matrix
 Y <- data$Y
 T <- data$Z
@@ -57,29 +59,13 @@ for (alpha in alphalist){
     CI_CQR[trainid, ] <- CItrain_CQR
     CI_CQR[testid, ] <- CItest_CQR
     df <- data.frame(
-        method = "CQR",
         alpha = alpha,
         avglen = mean(CI_CQR[, 2] - CI_CQR[, 1]),
         dflen = sd(CI_CQR[, 2] - CI_CQR[, 1]),
         pos = mean(CI_CQR[, 1] > 0),
         neg = mean(CI_CQR[, 2] < 0))
     res <- rbind(res, df)
-
-    CItest_BART <- bart_inexact_ITE_CI(
-        Xtrain, Ytrain, Ttrain, Xtest, alpha = alpha)
-    CItrain_BART <- bart_inexact_ITE_CI(
-        Xtest, Ytest, Ttest, Xtrain, alpha = alpha)
-    CI_BART <- matrix(NA, n, 2)
-    CI_BART[trainid, ] <- CItrain_BART
-    CI_BART[testid, ] <- CItest_BART
-    df <- data.frame(
-        method = "BART",
-        alpha = alpha,
-        avglen = mean(CI_BART[, 2] - CI_BART[, 1]),
-        dflen = sd(CI_BART[, 2] - CI_BART[, 1]),
-        pos = mean(CI_BART[, 1] > 0),
-        neg = mean(CI_BART[, 2] < 0))
-    res <- rbind(res, df)
+    save(res, file = filename)
     
     print(alpha)
 }

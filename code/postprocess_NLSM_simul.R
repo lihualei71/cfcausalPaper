@@ -1,26 +1,26 @@
 library("tidyverse")
 
-params <- read.table("NLSM_simul2_params.txt")
+params <- read.table("../jobs/simul_NLSM_params.txt")
 
-df <- list()
+res_marginal <- list()
+res_cond <- list()
 for (i in 1:nrow(params)){
-    filename <- paste0("../raw_data_cluster/NLSM_simul_alpha", params[i, 3],
-                       "_seed", params[i, 2],
+    filename <- paste0("../raw_data_cluster/NLSM_simul",
+                       "_alpha", params[i, 2],
+                       "_seed", params[i, 1],
                        "_ntr", 1000,
                        "_nte", 5000,
-                       "_ps", 0,
-                       "_sd", 0.5,
                        "_B", 50,
-                       "_rho", params[i, 1],
                        ".RData")
     tmp <- try(load(filename))
     if (class(tmp) == "try-error"){
         next
     }
-    df[[i]] <- data.frame(res,
-                          rho = params[i, 1],
-                          alpha = params[i, 3])
+    res_marginal[[i]] <- data.frame(res$marginal, alpha = params[i, 2])
+    res_cond[[i]] <- data.frame(res$cond, alpha = params[i, 2])
 }
-res <- do.call(rbind, df)
+res_marginal <- do.call(rbind, res_marginal)
+res_cond <- do.call(rbind, res_cond)
 
-save(res, file = "../data/NLSM_simul_ITE.RData")
+res <- list(marginal = res_marginal, cond = res_cond)
+save(res, file = "../data/simul_NLSM_results.RData")
