@@ -27,7 +27,7 @@ if (!interactive()){
 }
 
 ntest <- 10000
-set.seed(seed * 2020)
+set.seed(seed)
 filename <- paste0("../data/synthetic_simul",
                    "_n", n,
                    "_d", d,
