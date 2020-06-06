@@ -6,8 +6,7 @@ This repository contains the code to implement all examples in our paper: [Confo
 All R scripts are listed in the folder `code/`. The bash files to submit jobs to the cluster are listed in the folder `jobs/` (note that this depends on your cluster and the bash file might need to be changed correspondingly). The outputs and the plots have already been contained in the folder `data/` and the folder `figs/`, respectively. 
 
 ## Installing the package
-Run the following code in `code/`
-
+The [cfcausal](https://github.com/lihualei71/cfcausal) package can be installed as follows:
 ```
 if (!require("devtools")){
     install.packages("devtools")
