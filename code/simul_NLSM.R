@@ -30,7 +30,7 @@ if (!interactive()){
 }
 
 set.seed(seed * 2020)
-filename <- paste0("../data/NLSM_simul",
+filename <- paste0("../raw_data_cluster/NLSM_simul",
                    "_alpha", alpha,
                    "_seed", seed,
                    "_ntr", ntrain,

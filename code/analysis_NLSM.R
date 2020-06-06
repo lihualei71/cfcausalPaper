@@ -19,7 +19,7 @@ if (!interactive()){
 }
 
 set.seed(seed)
-filename <- paste0("../data/analysis_NLSM_seed", seed, ".RData")
+filename <- paste0("../raw_data_cluster/analysis_NLSM_seed", seed, ".RData")
 
 X <- data %>% select(-Z, -Y) %>% as.matrix
 Y <- data$Y

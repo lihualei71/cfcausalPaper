@@ -28,7 +28,7 @@ if (!interactive()){
 
 ntest <- 10000
 set.seed(seed)
-filename <- paste0("../data/synthetic_simul",
+filename <- paste0("../raw_data_cluster/synthetic_simul",
                    "_n", n,
                    "_d", d,
                    "_seed", seed,
