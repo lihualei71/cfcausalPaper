@@ -26,9 +26,10 @@ Y <- data$Y
 T <- data$Z
 n <- length(Y)
 
-alphalist <- 0.05 * 10
+alphalist <- 0.05 * (1:10)
 res <- data.frame()
 for (alpha in alphalist){
+    ## data splitting
     id <- sample(n, n)
     trainid <- id[1:floor(n / 2)]
     testid <- id[(floor(n / 2) + 1):n]
@@ -39,6 +40,7 @@ for (alpha in alphalist){
     Ytest <- Y[testid]
     Ttest <- T[testid]
 
+    ## Get confidence intervals
     CItest_fun <- conformalIte(Xtrain, Ytrain, Ttrain,
                                alpha = alpha,
                                algo = "nest",

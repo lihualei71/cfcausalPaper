@@ -1,3 +1,5 @@
+## Get the coverage and the average length of confidence
+## intervals CI
 summary_CI <- function(target, CI){
     len <- mean(CI[, 2] - CI[, 1])
     cr <- mean(target >= CI[, 1] & target <= CI[, 2])
@@ -5,6 +7,9 @@ summary_CI <- function(target, CI){
     return(list(cr = cr, len = len))
 }
 
+## Get the conditional coverage of confidence intervals CI
+## with fx being the stratified into nstrata folds based on
+## its quantiles
 summary_CI_cond <- function(target, CI, fx, nstrata = 10){
     betas <- (0:nstrata) / nstrata
     qt <- quantile(fx, betas)
@@ -24,6 +29,7 @@ summary_CI_cond <- function(target, CI, fx, nstrata = 10){
         ungroup()
 }
 
+## Get counterfactual intervals by Causal Forest
 CF_Cf_CI <- function(X, Y, T, Xtest){
     fit <- grf::causal_forest(X, Y, T)
     pred <- predict(fit, Xtest, estimate.variance = TRUE)
@@ -33,7 +39,7 @@ CF_Cf_CI <- function(X, Y, T, Xtest){
     return(list(tau = CI, Y = CI))
 }
 
-
+## Get counterfactual intervals by X-learner
 xlearner_Cf_CI <- function(X, Y, T, Xtest,
                            B = 50){
     if (B == 0){
@@ -48,8 +54,8 @@ xlearner_Cf_CI <- function(X, Y, T, Xtest,
     return(list(tau = CI, Y = CI))
 }
 
-bart_Cf_CI <- function(X, Y, Xtest,
-                       ndpost = 100){
+## Get counterfactual intervals by BART
+bart_Cf_CI <- function(X, Y, Xtest){
     ids <- !is.na(Y)
     X <- as.data.frame(X)
     Xtest <- as.data.frame(Xtest)
@@ -60,17 +66,38 @@ bart_Cf_CI <- function(X, Y, Xtest,
     return(list(tau = CI_tau, Y = CI_Y))
 }
 
+## Get counterfactual intervals by weighted split CQR
 CQR_Cf_CI <- function(X, Y, Xtest, outfun, quantiles){
     res <- cfcausal::conformalCf(X, Y, quantiles = quantiles, outfun = outfun, psfun = NULL, useCV = FALSE)
     CI <- predict(res, Xtest, alpha = 0.05)
     return(list(tau = CI, Y = CI))    
 }
 
+## The function to implement one run of the simulation study
+## in Section 3.
+##
+## Inputs:
+##   n: sample size
+##   d: dimension
+##   ntest: number of testing points
+##   Xfun: the function to generate X
+##   taufun: the function to generate E[Y(1)]
+##   sdfun: the function to generate \sigma(x)
+##   psfun: the function to generate e(x)
+##   errdist: the error distribution
+##   B: the number of bootstrap draws for X-learner. Default ##      to be 50 since it is very slow
+##   strata: variables to be stratified with "tau" for CATE
+##           and "std" for \sigma(x)
+##
+## Outputs:
+##   tau: a data.frame with coverage and other information of CATE
+##   Y: a data.frame with coverage and other information of ITE
+##   cond: a data.frame with conditional coverage of ITE
 Cf_expr <- function(n, d, ntest,
                     Xfun, taufun, sdfun, psfun, errdist,
                     B = 50,
-                    ndpost = 100,
                     strata = c("tau", "std")){
+    ## Generate data
     X <- Xfun(n, d)
     Y0 <- rep(0, n)
     tau <- taufun(X)

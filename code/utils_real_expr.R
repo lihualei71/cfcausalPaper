@@ -1,3 +1,5 @@
+## Get the coverage and the average length of confidence
+## intervals CI
 summary_CI <- function(target, CI){
     len <- mean(CI[, 2] - CI[, 1])
     cr <- mean(target >= CI[, 1] & target <= CI[, 2])
@@ -5,6 +7,9 @@ summary_CI <- function(target, CI){
     return(list(cr = cr, len = len))
 }
 
+## Get the conditional coverage of confidence intervals CI
+## with fx being the stratified into nstrata folds based on
+## its quantiles
 summary_CI_cond <- function(target, CI, fx, nstrata = 10){
     betas <- (0:nstrata) / nstrata
     qt <- quantile(fx, betas)
@@ -24,6 +29,7 @@ summary_CI_cond <- function(target, CI, fx, nstrata = 10){
         ungroup()
 }
 
+## Get ITE intervals by Causal Forest
 CF_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05){
     fit <- grf::causal_forest(X, Y, T)
     pred <- predict(fit, Xtest, estimate.variance = TRUE)
@@ -33,6 +39,7 @@ CF_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05){
     return(CI)
 }
 
+## Get ITE intervals by X-learner
 xlearner_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05, B = 1){
     xl_rf <- causalToolbox::X_RF(feat = X, tr = T, yobs = Y, nthread = 1)
     CI <- causalToolbox::CateCI(xl_rf, Xtest, B = B,
@@ -40,6 +47,7 @@ xlearner_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05, B = 1){
     return(CI)
 }
 
+## Get ITE intervals by naive-BART
 bart_naive_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05){
     X <- as.data.frame(X)
     X1 <- X[T == 1, ]
@@ -56,6 +64,7 @@ bart_naive_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05){
     return(list(CI = CI, CI1 = CI1, CI0 = CI0))
 }
 
+## Get ITE intervals by inexact-nested-BART
 bart_inexact_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05,
                                 cfprop = 0.5){
 
@@ -91,6 +100,7 @@ bart_inexact_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05,
     return(CI)
 }
 
+## Get ITE intervals by inexact-nested-CQR
 CQR_inexact_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05,
                                ...){
     CIfun <- cfcausal::conformalIte(X, Y, T,
@@ -102,6 +112,7 @@ CQR_inexact_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05,
     return(CI)
 }
 
+## Get ITE intervals by exact-nested-CQR
 CQR_exact_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05, ...){
     CIfun <- cfcausal::conformalIte(X, Y, T,
                                     alpha,
@@ -112,6 +123,7 @@ CQR_exact_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05, ...){
     return(CI)
 }
 
+## Get ITE intervals by naive-CQR
 CQR_naive_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05, ...){
     CIfun <- cfcausal::conformalIte(X, Y, T,
                                     alpha,
@@ -121,6 +133,7 @@ CQR_naive_ITE_CI <- function(X, Y, T, Xtest, alpha = 0.05, ...){
     return(CI)
 }
 
+## Generate data
 gen_data <- function(data, ntrain = 1000, ntest = 5000){
     X <- data$X
     EY0 <- data$EY0
@@ -165,11 +178,25 @@ gen_data <- function(data, ntrain = 1000, ntest = 5000){
          stdtest = stdtest)
 }
 
+## The function to implement one run of the simulation study
+## in Section 3.
+##
+## Inputs:
+##   data: the dataset to create synthetic data
+##   ntrain: sample size of the training data
+##   ntest: sample size of the testing data
+##   alpha: level
+##   B: the number of bootstrap draws for X-learner. Default ##      to be 50 since it is very slow
+##
+## Outputs:
+##   marginal: a data.frame with coverage and other information of ITE
+##   cond: a data.frame with conditional coverage of ITE
 ITE_expr <- function(data,
                      ntrain = 3000,
                      ntest = 3000,
                      alpha = 0.05,
                      B = 0){
+    ## Generate data    
     data_simul <- gen_data(data, ntrain, ntest)
     Xtrain <- data_simul$Xtrain
     Ytrain <- data_simul$Ytrain
@@ -181,7 +208,8 @@ ITE_expr <- function(data,
 
     res <- data.frame()
     res_cond <- data.frame()
-    
+
+    ## Causal Forest    
     CF_CI <- try(CF_ITE_CI(Xtrain, Ytrain, Ttrain, Xtest, alpha))
     if (class(CF_CI) != "try-error"){
         df <- summary_CI(tautest, CF_CI)
@@ -199,6 +227,7 @@ ITE_expr <- function(data,
         res_cond <- rbind(res_cond, df_cond_std)
     }
 
+    ## X-learner    
     if (B > 0 && alpha == 0.05){
         xlearner_CI <- try(xlearner_ITE_CI(Xtrain, Ytrain, Ttrain, Xtest, alpha, B))
         if (class(xlearner_CI) != "try-error"){
@@ -217,7 +246,8 @@ ITE_expr <- function(data,
             res_cond <- rbind(res_cond, df_cond_std)
         }
     }
-    
+
+    ## naive-BART
     bart_naive_CI <- try(bart_naive_ITE_CI(Xtrain, Ytrain, Ttrain, Xtest, alpha)$CI)
     if (class(bart_naive_CI) != "try-error"){
         df <- summary_CI(tautest, bart_naive_CI)
@@ -235,6 +265,7 @@ ITE_expr <- function(data,
         res_cond <- rbind(res_cond, df_cond_std)
     }
 
+    ## inexact-nested-BART    
     bart_inexact_CI <- try(bart_inexact_ITE_CI(Xtrain, Ytrain, Ttrain, Xtest, alpha))
     if (class(bart_inexact_CI) != "try-error"){
         df <- summary_CI(tautest, bart_inexact_CI)
@@ -252,8 +283,10 @@ ITE_expr <- function(data,
         res_cond <- rbind(res_cond, df_cond_std)
     }
 
+    ## CQR    
     outfun <- "quantBART"
     quantiles <- c(alpha / 2, 1 - alpha / 2)
+    ## inexact-nested-CQR
     CQR_inexact_CI <-
         try(CQR_inexact_ITE_CI(Xtrain, Ytrain, Ttrain,
                                Xtest, alpha, 
@@ -275,6 +308,7 @@ ITE_expr <- function(data,
         res_cond <- rbind(res_cond, df_cond_std)
     }
 
+    ## exact-nested-CQR    
     CQR_exact_CI <-
         try(CQR_exact_ITE_CI(Xtrain, Ytrain, Ttrain,
                              Xtest, alpha, 
@@ -296,6 +330,7 @@ ITE_expr <- function(data,
         res_cond <- rbind(res_cond, df_cond_std)
     }
 
+    ## naive-CQR    
     CQR_naive_CI <-
         try(CQR_naive_ITE_CI(Xtrain, Ytrain, Ttrain,
                              Xtest, alpha, 
