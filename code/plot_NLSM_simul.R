@@ -2,9 +2,15 @@ library("tidyverse")
 library("ggplot2")
 
 load("../data/simul_NLSM_results.RData")
+load("../data/NLSM_simul.RData")
+oracle_width <- mean(sqrt(data$IQR1^2 * data$IQR0^2) * 0.5 * 3.92)
 
-method_levels <- c("CF", "xlearner", "bart_naive", "bart_inexact", "CQR_naive", "CQR_exact", "CQR_inexact")
-method_labels <- c("Causal Forest", "X-learner", "BART (Naive)", "BART (Inexact)", "CQR (Naive)", "CQR (Exact)", "CQR (Inexact)")
+method_levels <- c("CF", "xlearner",
+                   "bart_naive", "bart_inexact",
+                   "CQR_naive", "CQR_exact", "CQR_inexact")
+method_labels <- c("Causal Forest", "X-learner",
+                   "BART (Naive)", "BART (Inexact)",
+                   "CQR (Naive)", "CQR (Exact)", "CQR (Inexact)")
 
 ## Coverage of ITE
 res$marginal %>% 
@@ -30,6 +36,7 @@ res$marginal %>%
                            labels = method_labels)) %>%
     ggplot(aes(x = method, y = len)) +
     geom_boxplot() +
+    geom_hline(yintercept = oracle_width, color = "blue") +    
     xlab("Method") +
     ylab(paste0("Length of CI (alpha = 0.05)")) + 
     coord_flip() +
@@ -68,6 +75,6 @@ res$cond %>%
     ylab(paste0("Conditional Coverage of ITE (alpha = 0.05)")) + 
     theme_bw() +
     theme(panel.grid = element_blank(),
-          strip.text = element_text(size = 15))
+          strip.text = element_text(size = 12.5))
 
 ggsave(paste0("../figs/simul_NLSM_cond_paper.pdf"), last_plot(), width = 9, height = 3.5)

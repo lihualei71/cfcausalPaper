@@ -14,10 +14,10 @@ res$tau %>%
                                  "d = 100"))) %>%
     mutate(exprid = factor(exprid,
                            levels = 1:4,
-                           labels = c("Ho. + Indep.",
-                                      "He. + Indep.",
-                                      "Ho. + Corr.",
-                                      "He. + Corr."))) %>%
+                           labels = c("Homosc. + Ind.",
+                                      "Heterosc. + Ind.",
+                                      "Homosc. + Corr.",
+                                      "Heterosc. + Corr."))) %>%
     mutate(method = factor(method,
                            levels = method_levels,
                            labels = method_labels)) %>%
@@ -43,10 +43,10 @@ res$Y %>%
                                  "d = 100"))) %>%
     mutate(exprid = factor(exprid,
                            levels = 1:4,
-                           labels = c("Ho. + Indep.",
-                                      "He. + Indep.",
-                                      "Ho. + Corr.",
-                                      "He. + Corr."))) %>%
+                           labels = c("Homosc. + Ind.",
+                                      "Heterosc. + Ind.",
+                                      "Homosc. + Corr.",
+                                      "Heterosc. + Corr."))) %>%
     mutate(method = factor(method,
                            levels = method_levels,
                            labels = method_labels)) %>%
@@ -72,16 +72,17 @@ res$Y %>%
                                  "d = 100"))) %>%
     mutate(exprid = factor(exprid,
                            levels = 1:4,
-                           labels = c("Ho. + Indep.",
-                                      "He. + Indep.",
-                                      "Ho. + Corr.",
-                                      "He. + Corr."))) %>%
+                           labels = c("Homosc. + Ind.",
+                                      "Heterosc. + Ind.",
+                                      "Homosc. + Corr.",
+                                      "Heterosc. + Corr."))) %>%
     mutate(method = factor(method,
                            levels = method_levels,
                            labels = method_labels)) %>%
     ggplot(aes(x = method, y = len)) +
     geom_boxplot() +
     facet_grid(d ~ exprid) +
+    geom_hline(yintercept = 3.92, color = "blue") +    
     xlab("Method") + ylab("Average Length of Interval estimates of Y(1)-Y(0) (alpha = 0.05)") +
     expand_limits(y = 0) + 
     coord_flip() +
@@ -100,10 +101,10 @@ res$cond %>%
     filter(d == 10) %>%
     mutate(exprid = factor(exprid,
                            levels = 1:4,
-                           labels = c("Ho. + Indep.",
-                                      "He. + Indep.",
-                                      "Ho. + Corr.",
-                                      "He. + Corr."))) %>%
+                           labels = c("Homosc. + Ind.",
+                                      "Heterosc. + Ind.",
+                                      "Homosc. + Corr.",
+                                      "Heterosc. + Corr."))) %>%
     mutate(method = factor(method,
                            levels = method_levels,
                            labels = method_labels)) %>%
@@ -124,10 +125,10 @@ res$cond %>%
     ylab("Conditional Coverage of ITE (alpha = 0.05)") +
     theme_bw() +
     theme(panel.grid = element_blank(),
-          strip.text = element_text(size = 15))
+          strip.text = element_text(size = 12.5))
     
 ggsave("../figs/simul_synthetic_cond_d10_tau_paper.pdf", last_plot(),
-       width = 11, height = 6)
+       width = 11, height = 6.5)
 
 ## Conditional Coverage of ITE with CATE being stratified and d = 100
 res$cond %>%
@@ -135,10 +136,10 @@ res$cond %>%
     filter(d == 100) %>%
     mutate(exprid = factor(exprid,
                            levels = 1:4,
-                           labels = c("Ho. + Indep.",
-                                      "He. + Indep.",
-                                      "Ho. + Corr.",
-                                      "He. + Corr."))) %>%
+                           labels = c("Homosc. + Ind.",
+                                      "Heterosc. + Ind.",
+                                      "Homosc. + Corr.",
+                                      "Heterosc. + Corr."))) %>%
     mutate(method = factor(method,
                            levels = method_levels,
                            labels = method_labels)) %>%
@@ -159,10 +160,10 @@ res$cond %>%
     ylab("Conditional Coverage of ITE (alpha = 0.05)") +
     theme_bw() +
     theme(panel.grid = element_blank(),
-          strip.text = element_text(size = 15))
+          strip.text = element_text(size = 12.5))
     
 ggsave("../figs/simul_synthetic_cond_d100_tau_paper.pdf", last_plot(),
-       width = 11, height = 6)
+       width = 11, height = 6.5)
 
 ## Conditional Coverage of ITE with sigma(x) being stratified and d = 10
 res$cond %>%
@@ -170,10 +171,10 @@ res$cond %>%
     filter(d == 10) %>%
     mutate(exprid = factor(exprid,
                            levels = 1:4,
-                           labels = c("Ho. + Indep.",
-                                      "He. + Indep.",
-                                      "Ho. + Corr.",
-                                      "He. + Corr."))) %>%
+                           labels = c("Homosc. + Ind.",
+                                      "Heterosc. + Ind.",
+                                      "Homosc. + Corr.",
+                                      "Heterosc. + Corr."))) %>%
     mutate(method = factor(method,
                            levels = method_levels,
                            labels = method_labels)) %>%
@@ -194,10 +195,10 @@ res$cond %>%
     ylab("Conditional Coverage of ITE (alpha = 0.05)") +
     theme_bw() +
     theme(panel.grid = element_blank(),
-          strip.text = element_text(size = 15))
+          strip.text = element_text(size = 12.5))
     
 ggsave("../figs/simul_synthetic_cond_d10_std_paper.pdf", last_plot(),
-       width = 11, height = 3.5)
+       width = 11, height = 4)
 
 ## Conditional Coverage of ITE with sigma(x) being stratified and d = 100
 res$cond %>%
@@ -205,10 +206,10 @@ res$cond %>%
     filter(d == 100) %>%
     mutate(exprid = factor(exprid,
                            levels = 1:4,
-                           labels = c("Ho. + Indep.",
-                                      "He. + Indep.",
-                                      "Ho. + Corr.",
-                                      "He. + Corr."))) %>%
+                           labels = c("Homosc. + Ind.",
+                                      "Heterosc. + Ind.",
+                                      "Homosc. + Corr.",
+                                      "Heterosc. + Corr."))) %>%
     mutate(method = factor(method,
                            levels = method_levels,
                            labels = method_labels)) %>%
@@ -229,7 +230,7 @@ res$cond %>%
     ylab("Conditional Coverage of ITE (alpha = 0.05)") +
     theme_bw() +
     theme(panel.grid = element_blank(),
-          strip.text = element_text(size = 15))
+          strip.text = element_text(size = 12.5))
     
 ggsave("../figs/simul_synthetic_cond_d100_std_paper.pdf", last_plot(),
-       width = 11, height = 3.5)
+       width = 11, height = 4)

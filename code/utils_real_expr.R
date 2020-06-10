@@ -286,70 +286,76 @@ ITE_expr <- function(data,
     ## CQR    
     outfun <- "quantBART"
     quantiles <- c(alpha / 2, 1 - alpha / 2)
-    ## inexact-nested-CQR
-    CQR_inexact_CI <-
-        try(CQR_inexact_ITE_CI(Xtrain, Ytrain, Ttrain,
-                               Xtest, alpha, 
-                               quantiles = quantiles,
-                               outfun = outfun))
-    if (class(CQR_inexact_CI) != "try-error"){
-        df <- summary_CI(tautest, CQR_inexact_CI)
-        df <- data.frame(method = "CQR_inexact", df)
-        res <- rbind(res, df)
-        df_cond_tau <- summary_CI_cond(tautest, CQR_inexact_CI, CATEtest, 10)
-        df_cond_tau <- data.frame(method = "CQR_inexact",
-                                  type = "tau",
-                                  df_cond_tau)
-        res_cond <- rbind(res_cond, df_cond_tau)
-        df_cond_std <- summary_CI_cond(tautest, CQR_inexact_CI, stdtest, 10)
-        df_cond_std <- data.frame(method = "CQR_inexact",
-                                  type = "std",
-                                  df_cond_std)
-        res_cond <- rbind(res_cond, df_cond_std)
-    }
 
-    ## exact-nested-CQR    
-    CQR_exact_CI <-
-        try(CQR_exact_ITE_CI(Xtrain, Ytrain, Ttrain,
-                             Xtest, alpha, 
-                             quantiles = quantiles,
-                             outfun = outfun))
-    if (class(CQR_exact_CI) != "try-error"){
-        df <- summary_CI(tautest, CQR_exact_CI)
-        df <- data.frame(method = "CQR_exact", df)
-        res <- rbind(res, df)
-        df_cond_tau <- summary_CI_cond(tautest, CQR_exact_CI, CATEtest, 10)
-        df_cond_tau <- data.frame(method = "CQR_exact",
-                                  type = "tau",
-                                  df_cond_tau)
-        res_cond <- rbind(res_cond, df_cond_tau)
-        df_cond_std <- summary_CI_cond(tautest, CQR_exact_CI, stdtest, 10)
-        df_cond_std <- data.frame(method = "CQR_exact",
-                                  type = "std",
-                                  df_cond_std)
-        res_cond <- rbind(res_cond, df_cond_std)
-    }
+    for (outfun in c("quantRF", "quantBoosting", "quantBART")){
+        ## inexact-nested-CQR
+        CQR_inexact_CI <-
+            try(CQR_inexact_ITE_CI(Xtrain, Ytrain, Ttrain,
+                                   Xtest, alpha, 
+                                   quantiles = quantiles,
+                                   outfun = outfun))
+        name <- paste0("CQR_inexact_", outfun)
+        if (class(CQR_inexact_CI) != "try-error"){
+            df <- summary_CI(tautest, CQR_inexact_CI)
+            df <- data.frame(method = name, df)
+            res <- rbind(res, df)
+            df_cond_tau <- summary_CI_cond(tautest, CQR_inexact_CI, CATEtest, 10)
+            df_cond_tau <- data.frame(method = name,
+                                      type = "tau",
+                                      df_cond_tau)
+            res_cond <- rbind(res_cond, df_cond_tau)
+            df_cond_std <- summary_CI_cond(tautest, CQR_inexact_CI, stdtest, 10)
+            df_cond_std <- data.frame(method = name,
+                                      type = "std",
+                                      df_cond_std)
+            res_cond <- rbind(res_cond, df_cond_std)
+        }
 
-    ## naive-CQR    
-    CQR_naive_CI <-
-        try(CQR_naive_ITE_CI(Xtrain, Ytrain, Ttrain,
-                             Xtest, alpha, 
-                             quantiles = quantiles,
-                             outfun = outfun))
-    if (class(CQR_naive_CI) != "try-error"){
-        df <- summary_CI(tautest, CQR_naive_CI)
-        df <- data.frame(method = "CQR_naive", df)
-        res <- rbind(res, df)
-        df_cond_tau <- summary_CI_cond(tautest, CQR_naive_CI, CATEtest, 10)
-        df_cond_tau <- data.frame(method = "CQR_naive",
-                                  type = "tau",
-                                  df_cond_tau)
-        res_cond <- rbind(res_cond, df_cond_tau)
-        df_cond_std <- summary_CI_cond(tautest, CQR_naive_CI, stdtest, 10)
-        df_cond_std <- data.frame(method = "CQR_naive",
-                                  type = "std",
-                                  df_cond_std)
-        res_cond <- rbind(res_cond, df_cond_std)
+        ## exact-nested-CQR    
+        CQR_exact_CI <-
+            try(CQR_exact_ITE_CI(Xtrain, Ytrain, Ttrain,
+                                 Xtest, alpha, 
+                                 quantiles = quantiles,
+                                 outfun = outfun))
+        name <- paste0("CQR_exact_", outfun)
+        if (class(CQR_exact_CI) != "try-error"){
+            df <- summary_CI(tautest, CQR_exact_CI)
+            df <- data.frame(method = name, df)
+            res <- rbind(res, df)
+            df_cond_tau <- summary_CI_cond(tautest, CQR_exact_CI, CATEtest, 10)
+            df_cond_tau <- data.frame(method = name,
+                                      type = "tau",
+                                      df_cond_tau)
+            res_cond <- rbind(res_cond, df_cond_tau)
+            df_cond_std <- summary_CI_cond(tautest, CQR_exact_CI, stdtest, 10)
+            df_cond_std <- data.frame(method = name,
+                                      type = "std",
+                                      df_cond_std)
+            res_cond <- rbind(res_cond, df_cond_std)
+        }
+
+        ## naive-CQR    
+        CQR_naive_CI <-
+            try(CQR_naive_ITE_CI(Xtrain, Ytrain, Ttrain,
+                                 Xtest, alpha, 
+                                 quantiles = quantiles,
+                                 outfun = outfun))
+        name <- paste0("CQR_naive_", outfun)        
+        if (class(CQR_naive_CI) != "try-error"){
+            df <- summary_CI(tautest, CQR_naive_CI)
+            df <- data.frame(method = name, df)
+            res <- rbind(res, df)
+            df_cond_tau <- summary_CI_cond(tautest, CQR_naive_CI, CATEtest, 10)
+            df_cond_tau <- data.frame(method = name,
+                                      type = "tau",
+                                      df_cond_tau)
+            res_cond <- rbind(res_cond, df_cond_tau)
+            df_cond_std <- summary_CI_cond(tautest, CQR_naive_CI, stdtest, 10)
+            df_cond_std <- data.frame(method = name,
+                                      type = "std",
+                                      df_cond_std)
+            res_cond <- rbind(res_cond, df_cond_std)
+        }
     }
 
     list(marginal = res, cond = res_cond)
