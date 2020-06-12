@@ -1,6 +1,6 @@
 # Paper Repository
 
-This repository contains the code to implement all examples in our paper: [Conformal Inference of Counterfactuals and Individual Treatment Effects](https://arxiv.org/abs/). 
+This repository contains the code to implement all examples in our paper: [Conformal Inference of Counterfactuals and Individual Treatment Effects](https://arxiv.org/abs/2006.06138). 
 
 ## Introduction
 All R scripts are included in the folder `code/`. The bash files to submit jobs to the cluster are included in the folder `jobs/` (note that this depends on your cluster and the bash file might need to be changed accordingly). The outputs and the plots are included in the folder `data/` and the folder `figs/`, respectively. 
