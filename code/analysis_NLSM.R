@@ -46,7 +46,9 @@ for (alpha in alphalist){
                                algo = "nest",
                                type = "CQR",
                                quantiles = c(alpha / 2, 1 - alpha / 2),
-                               outfun = "quantBART")
+                               outfun = "quantBART",
+                               loquantile = 0.5,
+                               upquantile = 0.5)
     CItest_CQR <- CItest_fun(Xtest)
 
     CItrain_fun <- conformalIte(Xtest, Ytest, Ttest,
@@ -54,12 +56,14 @@ for (alpha in alphalist){
                                 algo = "nest",
                                 type = "CQR",
                                 quantiles = c(alpha / 2, 1 - alpha / 2),
-                                outfun = "quantBART")
+                                outfun = "quantBART",
+                                loquantile = 0.5,
+                                upquantile = 0.5)
     CItrain_CQR <- CItrain_fun(Xtrain)
 
     CI_CQR <- matrix(NA, n, 2)
-    CI_CQR[trainid, ] <- CItrain_CQR
-    CI_CQR[testid, ] <- CItest_CQR
+    CI_CQR[trainid, ] <- as.matrix(CItrain_CQR)
+    CI_CQR[testid, ] <- as.matrix(CItest_CQR)
     df <- data.frame(
         alpha = alpha,
         avglen = mean(CI_CQR[, 2] - CI_CQR[, 1]),

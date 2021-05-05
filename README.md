@@ -38,7 +38,7 @@ Rscript analysis_NLSM.R --seed 199
 
 - `plot_synthetic_simul.R`, `plot_NLSM_simul.R` and `plot_NLSM_analysis.R` generate the plots in the paper. See the last section for details.
 
-### Submitting jobs, Postprocessing results, and generating plots
+## Submitting jobs, Postprocessing results, and generating plots
 The folder `jobs/` contains all bash scripts to submit jobs to the cluster. The numerical studies take ~1200 CPU hours in total. To run each .sh file, create the following folders first.
 ```
 mkdir log results raw_data_cluster

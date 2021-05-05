@@ -6,7 +6,7 @@ load("../data/simul_synthetic_results.RData")
 method_levels <- c("CF", "xlearner", "bart", "CQR-quantRF", "CQR-quantBoosting", "CQR-quantBART")
 method_labels <- c("Causal Forest", "X-learner", "BART", "CQR-RF", "CQR-Boosting", "CQR-BART")
 
-## Coverage of coverage
+## Coverage of CATE
 res$tau %>% 
     mutate(d = factor(d,
                       levels = c(10, 100),
