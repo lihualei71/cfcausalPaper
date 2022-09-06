@@ -22,7 +22,7 @@ if (!interactive()){
 } else {
     n <- 500
     d <- 2
-    B <- 0    
+    B <- 0
     seed <- 0
 }
 

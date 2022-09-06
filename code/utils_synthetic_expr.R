@@ -47,7 +47,7 @@ xlearner_Cf_CI <- function(X, Y, T, Xtest,
         return(list(tau = df_tau, Y1 = df_Y))
     }
 
-    xl_rf <- causalToolbox::X_RF(feat = X, tr = T, yobs = Y, nthread = 1)
+    xl_rf <- causalToolbox::X_RF(feat = X, tr = T, yobs = Y, nthread = 0)
     cate_esti_rf <- causalToolbox::EstimateCate(xl_rf, Xtest)
     CI <- causalToolbox::CateCI(xl_rf, Xtest, B = B,
                                 verbose = FALSE, nthread = 1)[, 2:3]
@@ -57,10 +57,10 @@ xlearner_Cf_CI <- function(X, Y, T, Xtest,
 ## Get counterfactual intervals by BART
 bart_Cf_CI <- function(X, Y, Xtest){
     ids <- !is.na(Y)
-    X <- as.data.frame(X)
+    X <- as.data.frame(X)[ids, ]
+    y <- Y[ids]
     Xtest <- as.data.frame(Xtest)
-    fit <- bartMachine::bartMachine(X[ids, ], Y[ids],
-                                    verbose = FALSE)
+    fit <- bartMachine::bartMachine(X, y, verbose = FALSE)
     CI_tau <- bartMachine::calc_credible_intervals(fit, new_data = Xtest, ci_conf = 0.95)
     CI_Y <- bartMachine::calc_prediction_intervals(fit, new_data = Xtest, pi_conf = 0.95)$interval
     return(list(tau = CI_tau, Y = CI_Y))
